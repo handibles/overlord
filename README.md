@@ -69,11 +69,11 @@ Sorry for the generally amateur code, and the bugs that are no doubt hiding here
 
 My databases as used here are located at:
 
- - `bt2`  : `/data/Food/analysis/R0602_microsupport/jamie.fitzgerald/ref/bt2/hum_deco`
- - `kr2`  : `/data/Food/analysis/R0602_microsupport/jamie.fitzgerald/ref/kraken..`, probably
- - `brkn` : `/data/Food/analysis/R0602_microsupport/jamie.fitzgerald/ref/kraken...`, probably also...
+ - `bt2`  : `/../analysis/user/ref/bt2/hum_deco`
+ - `kr2`  : `/../analysis/user/ref/kraken..`, probably
+ - `brkn` : `/../analysis/user/ref/kraken...`, probably also...
 
-My conda envs are at `/data/Food/analysis/R0602_microsupport/jamie.fitzgerald/bin/miniforge3/envs/`, likely 'twas the `base` env used for the above.
+My conda envs are at `/../analysis/user/bin/miniforge3/envs/`, likely 'twas the `base` env used for the above.
  
 Last tested on Teagasc HPC-1.
 
