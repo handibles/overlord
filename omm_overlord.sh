@@ -7,6 +7,13 @@
   ## 0.4 - feb 2024  -  need checkpoints!! see wbartonisms
   ## 0.5 - dec 2024  -  remove hallucinations & dross for AMUKHERJEE. Same as mmoverlord__chunk__over0.5.sh
   
+  
+  ## now that we're committed...: 
+    # - - rethink checks - check before creating any dirs etc.
+    # - - standardise names.
+    # - - does input *need* to be quoted?
+    # - - make setup script
+    
 
   ## consider
   # terminate if 1; no run on unset VAR; allow finishing on nonzero(?)
@@ -15,7 +22,7 @@
   # see https://mywiki.wooledge.org/BashFAQ/004
 
 
-## ** NB ** :: assume that wherever you're at thats where you're from. Change if you see fit.
+## ** NB ** :: assume that wherever you're at that's where you're from. Change if you see fit.
 OBIN=$( dirname $0 )
 
 
@@ -36,7 +43,7 @@ echo " + + +   RAWF = $RAWF
 if [[ ! $( shopt -s nullglob ; FQGZ=($RAWF) ; echo ${#FQGZ[@]} ) -gt 0 ]] || [[ ! $( echo $RAWF | sed -r "s/.*(fastq.gz)/\1/" ) = fastq.gz ]] ;
 then 
   echo " < ! >    inputs failed first check - arg1 doesn't glob to any *fastq.gz"
-  # exit 1
+  exit 1
 fi
 
 
@@ -118,31 +125,20 @@ TGTCTCTTATACACAT
 if [[ -z $PROJ ]] || [[ ! -d $ODIR ]] || [[ ! -d $ROOT ]] || [[ ! -d $RAWDIR ]] ; then
     echo " < ! >   input-args (project, work dir, raw fastq dir) not sane - check"
     exit 1
-fi
-
-
-if [[ ! -d $REF ]] || [[ ! -d $BT2_DB ]] ; then
+elif [[ ! -d $REF ]] || [[ ! -d $BT2_DB ]] ; then
     echo " < ! >   ref-args (\$HGR_BT, \$BT2_DB, \$REF) not sane - check"
     exit 1
-fi
-
-
-if [[ ! -s $MAT/ommfire__fastq_files.tsv ]] ; then
+elif [[ ! -s $MAT/ommfire__fastq_files.tsv ]] ; then
     echo " < ! >   \$MAT/ommfire__0__vars.tsv not found - check"
     exit 1
-fi
-
-
-if [[ ! -s $MAT/ommfire__samples.tsv ]] || [[ -z $MAT/ommfire__samples.tsv ]]; then
+elif [[ ! -s $MAT/ommfire__samples.tsv ]] || [[ -z $MAT/ommfire__samples.tsv ]]; then
     echo " < ! >   \$MAT/ommfire__samples.tsv empty/not found - check"
     exit 1
-fi
-
-
-if  [ ! $( echo $( wc -l $MAT/ommfire__fastq_files.tsv | cut -f 1 -d ' ' )/2 | bc ) -eq $( wc -l $MAT/ommfire__samples.tsv | cut -f 1 -d ' ' ) ] ; then
+elif  [ ! $( echo $( wc -l $MAT/ommfire__fastq_files.tsv | cut -f 1 -d ' ' )/2 | bc ) -eq $( wc -l $MAT/ommfire__samples.tsv | cut -f 1 -d ' ' ) ] ; then
     echo " < ! >   n_samp != n_fastq/2  -  check \$MAT manifests"
     exit 1
 fi  
+
 
 for i in $( tail -6 $MAT/ommfire__0__vars.tsv | cut -f 2 -d ' ' ) ;
 do
