@@ -60,7 +60,7 @@ Note that the `globbable` path (e.g. `/home/user/downloads/project/project*fastq
 	
 ```
 
-Note also that as the script is designed to standardise the quality parameters across runs, different runs should be called to `overlord` separately (i.e. **spawn more overlords**). 
+Note also that as the script is designed to standardise the quality parameters across runs, different runs should be called to `overlord` separately (i.e. [**spawn more overlords**](https://www.youtube.com/results?search_query=spawn+more+overlords>)). 
 
 
 ### apologies 
