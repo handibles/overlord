@@ -34,7 +34,6 @@ When you run `omm_overlord.sh`, it:
 There is also a secondary workflow for running `HUMAnN3`, which tries to account for having pre-processed your `fastq` (for consistency). It's not a script (yet), but is consistent with `overlord`. `HUMAnN3` can take **>10 hours per sample and uses a lot of resources** - thus `overlord` does not run it automatically.
 
 
-
 ### dependencies / catastrophic assumptions
 
  - assumes that you have many, many things **installed**:
@@ -60,8 +59,35 @@ Note that the `globbable` path (e.g. `/home/user/downloads/project/project*fastq
 	
 ```
 
-Note also that as the script is designed to standardise the quality parameters across runs, different runs should be called to `overlord` separately (i.e. [**spawn more overlords**](https://www.youtube.com/results?search_query=spawn+more+overlords>)). 
+Note also that as the script is designed to standardise the quality parameters across runs, different runs should be called to `overlord` separately (i.e. **spawn more overlords**). 
 
+
+
+### pooling runs for analysis
+
+The above steps standardised a large volume of shotgun data (1.6K samples). From the pooled `kraken2/Bracken` outputs generated, and an `XLSX` file of sample sheets prepared manually, 
+there are two post-processing scripts that anneal the run metadata with the microbiome output, and analyse the microbial communities hidden within the `FASTQ`:
+
+#### `omm_post_spreadsheeting`:
+
+ - load & format `kraken2/Bracken` abundance estimates/taxonomy into feature/hierarchy tables
+ - load metadata (prepared manually in `XLSX`) for all shotgun samples
+ - create alpha and beta diversity metrics across dataset
+ - perform centre-log ratio (CLR) standardisation of microbiome counts, with count-zero multiplicative (CZM) treatment of zero-values
+ - pick some basic-bacillus colours, theme options for `R`
+ 
+#### `omm_post_strainanalysis.R`:
+
+ - source spreadsheeting above, thereby loading required data (samples, metadata)
+ - using ``dbug` variable, subset data to only samples (test strain) of interest, plus all FFM / RSM-ve samples from those runs
+ - plot relative abundance, alpha & beta diversity
+ - run differential testing (linear mixed-effect model, with _post hoc_ estimated marginal means (LMM-EMM)), plot outcomes
+ - save all output plots, tables, and workspace as RDS, RDS, and R Workspaces respectively.
+ 
+These saved plots/tables/workspaces allow the user to store/access specific parts of the workflow later. 
+
+
+<br/>
 
 ### apologies 
 
