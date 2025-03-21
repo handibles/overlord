@@ -360,10 +360,16 @@ from different projects, and congeal them to some sort of unified
 output. It won’t rationalise bizarre and discordant metadata, but it
 will try and stabilise data quality to give comparable microbiome
 communities across runs/projects.</p>
-<div id="structure" class="section level3">
-<h3>structure</h3>
+<p>Note that as the pipeline is designed to standardise the quality
+parameters across runs, different runs should be called to
+<code>overlord</code> separately (i.e. <strong>spawn more
+overlords</strong>).</p>
+<div id="structure" class="section level2">
+<h2>structure</h2>
 <p>Given:</p>
 <ul>
+<li><code>/a/glob/for/all/*fastq.gz</code> # a path to your
+<code>fastq.gz</code> ; should work with a dir too, but</li>
 <li><code>./omm_overlord.sh</code> # setup &amp; run</li>
 <li><code>./omm_fqc20.sh</code> #
 <code>FastQC / MultiQC</code>script</li>
@@ -371,8 +377,6 @@ communities across runs/projects.</p>
 <code>trimmomatic</code> decisions</li>
 <li><code>./omm_quickwa.sh</code> # runs
 <code>trimmomatic, bowtie2, kraken2</code></li>
-<li><code>/a/glob/for/all/*fastq.gz</code> # a path to your
-<code>fastq.gz</code> ; should work with a dir too, but</li>
 <li><code>output/name</code> # path and basename for output</li>
 </ul>
 <p>
@@ -381,8 +385,8 @@ communities across runs/projects.</p>
 concatenate R1+R2 and run <code>HUMANN3</code></li>
 </ul>
 </div>
-<div id="operation" class="section level3">
-<h3>operation</h3>
+<div id="operation" class="section level2">
+<h2>operation</h2>
 <p>When you run <code>omm_overlord.sh</code>, it:</p>
 <ul>
 <li>sets up folders, parameters, QC file</li>
@@ -398,59 +402,15 @@ which tries to account for having pre-processed your <code>fastq</code>
 <code>overlord</code>. <code>HUMAnN3</code> can take <strong>&gt;10
 hours per sample and uses a lot of resources</strong> - thus
 <code>overlord</code> does not run it automatically.</p>
-</div>
-<div id="dependencies-catastrophic-assumptions" class="section level3">
-<h3>dependencies / catastrophic assumptions</h3>
-<ul>
-<li>assumes that you have many, many things
-<strong>installed</strong>:</li>
-<li><ul>
-<li>standard ::
-<code>mamba install -c bioconda multiqc fastqc trimmomatic bowtie2 kraken2 -y</code></li>
-</ul></li>
-<li><ul>
-<li>HUMAniNg ::
-<code>mamba create -n hum ; mamba activate hum ; mamba install -c biobakery humann -y</code></li>
-</ul></li>
-<li>assumes that you’ve built the <strong>databases</strong> for
-<code>kraken2</code>, <code>bracken</code>, and <code>bowtie2</code>!
-(see params echo’d to <code>$MAT/ommfire__0__vars.tsv</code> by
-<code>overlord.sh</code>, line 62)</li>
-<li>assumes that all four scripts are in, and run from, the same folder
-- to change this behaviour, modify the <code>OBIN</code> parameter when
-set at the start of <code>omm_overlord.sh</code> (line 19 of
-<code>overlord.sh</code>).</li>
-<li>makes <em>very</em> specific assumptions about the naming convention
-of your <code>fastq</code> - specifically, that they match
-<code>some/path/file_R*.fastq.gz</code> (line 59 of
-<code>overlord.sh</code>).</li>
-</ul>
-</div>
-<div id="by-example" class="section level2">
-<h2>by example</h2>
-<p>Note that the <code>globbable</code> path
-(e.g. <code>/home/user/downloads/project/project*fastq.gz</code>) is
-<strong>quoted</strong>.</p>
-<pre><code># presuming everything in your path and executable... 
-
-./omm_overlord.sh \
-    &quot;/a/globbable/path/to/all/relevant/*fastq.gz&quot; \
-    output/name \
-    &gt; ./otuput.log \
-    2&gt; ./output.err &amp;
-    </code></pre>
-<p>Note also that as the script is designed to standardise the quality
-parameters across runs, different runs should be called to
-<code>overlord</code> separately (i.e. <strong>spawn more
-overlords</strong>).</p>
 <div id="pooling-runs-for-analysis" class="section level3">
 <h3>pooling runs for analysis</h3>
-<p>The above steps standardised a large volume of shotgun data (1.6K
-samples). From the pooled <code>kraken2/Bracken</code> outputs
-generated, and an <code>XLSX</code> file of sample sheets prepared
-manually, there are two post-processing scripts that anneal the run
-metadata with the microbiome output, and analyse the microbial
-communities hidden within the <code>FASTQ</code>:</p>
+<p>The above steps allow multiple separate sequencing runs to be
+combined, even if the quality &amp; QC requirements differ. All the
+<code>kraken2/Bracken</code> outputs generated are pooled, and combined
+with an <code>XLSX</code> file of sample sheets prepared manually. Two
+post-processing scripts then anneal the run metadata with the microbiome
+output, and analyse the microbial communities hidden within the
+<code>FASTQ</code>:</p>
 <div id="omm_post_spreadsheeting" class="section level4">
 <h4><code>omm_post_spreadsheeting</code>:</h4>
 <ul>
@@ -480,14 +440,95 @@ Workspaces respectively.</li>
 </ul>
 <p>These saved plots/tables/workspaces allow the user to store/access
 specific parts of the workflow later.</p>
+</div>
+</div>
+</div>
+<div id="by-example" class="section level2">
+<h2>by example</h2>
+<p>Note that the <code>globbable</code> path
+(e.g. <code>/home/user/downloads/project/project*fastq.gz</code>) is
+<strong>quoted</strong>.</p>
+<pre><code># presuming everything in your path and executable... 
+
+./omm_overlord.sh \
+    &quot;/a/globbable/path/to/all/relevant/*fastq.gz&quot; \
+    output/name \
+    &gt; ./otuput.log \
+    2&gt; ./output.err &amp;
+    </code></pre>
+<p>Formatting of metadata and unifying of all <code>Bracken</code>
+outputs is up to the user. Only the post processing scripts are run,
+something like this would check them and save all the figures (or
+tables, etc.):</p>
+<pre><code># in R 
+
+# the data will have already been subset using debug in overlord_post_strainanalysis.R
+debug 
+
+# this RDS file is created by overlord_post_strainanalysis.R
+if( file.exists( paste0(&quot;output/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__plots.RDS&quot;) )    ){
+  print( debug)
+  omm_plots &lt;- readRDS( paste0(&quot;output/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__plots.RDS&quot;) )
+  # ggsave( omm_plots[[1]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__relab_full.png&quot;), width = 12, height = 10)
+  # ggsave( omm_plots[[2]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__relab_cool.png&quot;), width = 12, height = 6)
+  ggsave( omm_plots[[3]] &amp; 
+            theme(
+              axis.text.x = element_text( size = 14),
+              legend.text = element_text( face = &quot;italic&quot;, size = 14),
+              NULL
+            ) &amp; 
+            guides(fill = guide_legend(ncol =2)), 
+          file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__relab_pool.png&quot;), width = 12, height = 10)
+  # ggsave( omm_plots[[4]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__alpha.png&quot;), width = 10, height = 6)
+  # ggsave( omm_plots[[5]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__beta-full-CCA.png&quot;), width = 16, height = 12)
+  # ggsave( omm_plots[[6]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__beta-48-CCA.png&quot;), width = 16, height = 12)
+  # ggsave( omm_plots[[7]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__beta-48-CCA.png&quot;), width = 16, height = 12)
+  # ggsave( omm_plots[[8]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__LMM-EMM_&quot;, debug, &quot;-RSMve.png&quot;), width = 8, height = 12.5)
+  # ggsave( omm_plots[[9]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__LMM-EMM_&quot;, debug, &quot;-FFM.png&quot;), width = 8, height = 20)
+  # ggsave( omm_plots[[10]], file = paste0(&quot;vis/mm_&quot;, debug, &quot;/fhi__mmoverlord__&quot;, debug, &quot;__LMM-EMM_FFM-RSMve.png&quot;), width = 8, height = 25)
+  
+}else{ 
+  paste0( &quot;no plots for you - &quot;, debug)
+}
+})
+</code></pre>
 <p><br /></p>
-</div>
-</div>
 <div id="apologies" class="section level3">
 <h3>apologies</h3>
 <p>Sorry for the generally amateur code, and the bugs that are no doubt
 hiding herein. Sorry also about the (lack of) naming convention in the
 scripts etc..</p>
+</div>
+<div id="dependencies-catastrophic-assumptions" class="section level3">
+<h3>dependencies / catastrophic assumptions</h3>
+<ul>
+<li>assumes that you have many, many things
+<strong>installed</strong>:</li>
+<li><ul>
+<li>standard ::
+<code>mamba create -n mmo -c bioconda multiqc fastqc trimmomatic bowtie2 kraken2 -y</code></li>
+</ul></li>
+<li><ul>
+<li>HUMAniNg ::
+<code>mamba create -n hum -c biobakery humann -y</code></li>
+</ul></li>
+<li><ul>
+<li>R ::
+<code>install.packages(c(&quot;ggplot2&quot;, &quot;patchwork&quot;, &quot;vegan&quot;, &quot;ggvegan&quot;, &quot;lme4&quot;, &quot;emmeans&quot;, &quot;parallel&quot;))</code></li>
+</ul></li>
+<li>assumes that you’ve built the <strong>databases</strong> for
+<code>kraken2</code>, <code>bracken</code>, and <code>bowtie2</code>!
+(see params echo’d to <code>$MAT/ommfire__0__vars.tsv</code> by
+<code>overlord.sh</code>, line 62)</li>
+<li>assumes that all four scripts are in, and run from, the same folder
+- to change this behaviour, modify the <code>OBIN</code> parameter when
+set at the start of <code>omm_overlord.sh</code> (line 19 of
+<code>overlord.sh</code>).</li>
+<li>makes <em>very</em> specific assumptions about the naming convention
+of your <code>fastq</code> - specifically, that they match
+<code>some/path/file_R*.fastq.gz</code> (line 59 of
+<code>overlord.sh</code>).</li>
+</ul>
 <p>My databases as used here are located at:</p>
 <ul>
 <li><code>bt2</code> :
@@ -499,7 +540,8 @@ probably</li>
 </ul>
 <p>My conda envs are at
 <code>/../analysis/R***/user/bin/miniforge3/envs/</code>, likely ’twas
-the <code>base</code> env used for the above.</p>
+the <code>base</code> env used for the above (though thats
+inadvisable).</p>
 <p>Last tested on Teagasc HPC-1.</p>
 <div id="jfg-dec-2024" class="section level5">
 <h5>jfg dec 2024</h5>
