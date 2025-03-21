@@ -79,12 +79,12 @@ there are two post-processing scripts that anneal the run metadata with the micr
 #### `omm_post_strainanalysis.R`:
 
  - source spreadsheeting above, thereby loading required data (samples, metadata)
- - using ``dbug` variable, subset data to only samples (test strain) of interest, plus all FFM / RSM-ve samples from those runs
+ - using `dbug` variable, subset data to only samples (test strain) of interest, plus all FFM / RSM-ve samples from those runs
  - plot relative abundance, alpha & beta diversity
  - run differential testing (linear mixed-effect model, with _post hoc_ estimated marginal means (LMM-EMM)), plot outcomes
  - save all output plots, tables, and workspace as RDS, RDS, and R Workspaces respectively.
  
-These saved plots/tables/workspaces allow the user to store/access specific parts of the workflow later. 
+These saved plots/tables/workspaces allow the user to store/access specific parts of the workflow later. **Note** however, these are not deployable scripts - more liekly they can be called from an external `R script`.
 
 
 <br/>
